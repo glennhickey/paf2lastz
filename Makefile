@@ -1,7 +1,7 @@
 CWD:=$(shell pwd)
 CXX ?= g++
 
-CXXFLAGS := -O2 -Werror=return-type -std=c++14 -g $(CXXFLAGS)
+CXXFLAGS := -O3 -Werror=return-type -std=c++14 -g $(CXXFLAGS)
 
 all: paf2lastz
 
