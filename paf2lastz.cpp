@@ -37,7 +37,7 @@ static void for_each_cg(const string& cg_tok, std::function<void(const std::stri
     }
 }
 
-std::string paf2lastz(const std::string& paf_line, bool use_mapq) {
+pair<std::string, bool> paf2lastz(const std::string& paf_line, bool use_mapq) {
 
     // split into array of tokens
     vector<string> toks;
@@ -80,13 +80,15 @@ std::string paf2lastz(const std::string& paf_line, bool use_mapq) {
 
     // do the cigar
     bool found_cigar = false;
+    bool is_secondary = false;
     for (int i = 12; i < toks.size(); ++i) {
         if (toks[i].substr(0, 5) == "cg:Z:") {
             found_cigar = true;
             for_each_cg(toks[i], [&](const string& val, const string& cat) {
                     lastz_line += " " + cat + " " + val;
                 });
-            break;
+        } else if (toks[i].substr(0, 5) == "tp:A:") {
+            is_secondary = toks[i].length() == 6 && toks[i][5] == 'S';
         }
     }
 
@@ -94,6 +96,6 @@ std::string paf2lastz(const std::string& paf_line, bool use_mapq) {
         cerr << "Warning: cg tag not found on PAF line: " << paf_line << endl;
     }
 
-    return lastz_line;
+    return make_pair(lastz_line, is_secondary);
 }
     
